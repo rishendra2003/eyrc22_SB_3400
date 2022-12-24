@@ -1,0 +1,115 @@
+reg [2:0]state=3'b011;
+reg [31:0]str="SB00";
+integer i=0;
+integer count=434;
+integer r=1;
+reg tx_temp=1;
+
+always @ (posedge clk_50M) begin
+if(count==434)begin
+ case(state)
+  0: begin
+		tx_temp=0; 
+		state=1;
+	  end
+  1: begin
+     case(i)
+	   0: begin
+		   case(r)
+		   8: begin
+			    tx_temp=str[31]; 
+				 state=3'b010;
+				end
+		   7: tx_temp=str[30]; 
+			6: tx_temp=str[29];
+			5: tx_temp=str[28];
+			4: tx_temp=str[27]; 
+			3: tx_temp=str[26]; 
+			2: tx_temp=str[25]; 
+			1: tx_temp=str[24];
+		   endcase
+		   if(r==8)begin
+		     r=1;
+			  i=1;
+			end else 
+			    r=r+1; 
+			end
+	   1: begin
+		   case(r)
+		   8: begin
+			    tx_temp=str[23]; 
+				 state=3'b010;
+				end
+		   7: tx_temp=str[22]; 
+			6: tx_temp=str[21]; 
+			5: tx_temp=str[20]; 
+			4: tx_temp=str[19]; 
+			3: tx_temp=str[18]; 
+			2: tx_temp=str[17]; 
+			1: tx_temp=str[16];
+			endcase
+			if(r==8)begin
+			 r=1;
+			 i=2;
+			end else 
+			    r=r+1;
+			end
+	   2: begin
+		   case(r)
+		   8: begin
+			    tx_temp=str[15]; 
+				 state=3'b010;
+				end
+		   7: tx_temp=str[14]; 
+			6: tx_temp=str[13];
+			5: tx_temp=str[12];
+			4: tx_temp=str[11];
+			3: tx_temp=str[10];
+			2: tx_temp=str[9];
+			1: tx_temp=str[8];
+			endcase
+			if(r==8)begin
+			 r=1;
+			 i=3;
+			end else 
+			    r=r+1;
+			end
+	   3: begin
+		   case(r)
+		   8: begin
+			    tx_temp=str[7];
+				 state=3'b100;
+				end
+		   7: tx_temp=str[6];
+			6: tx_temp=str[5];
+			5: tx_temp=str[4];
+			4: tx_temp=str[3];
+			3: tx_temp=str[2];
+			2: tx_temp=str[1];
+			1: tx_temp=str[0];
+			endcase
+			if(r==8)begin
+			 r=1;
+			end else 
+			    r=r+1;
+			end
+	  endcase
+	  end
+  2: begin
+      tx_temp=1;
+		state=3'b011;
+	  end
+  3: begin
+      tx_temp=1;
+	   state=0;
+	  end
+  4: begin
+      tx_temp=1;
+	  end
+ endcase
+ count=1;
+end else 
+    count= count+1;
+end
+
+assign tx=tx_temp;

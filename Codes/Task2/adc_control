@@ -1,0 +1,122 @@
+integer i=0;
+integer j=-1;
+integer k=0;
+reg a=0;
+reg [1:0]b=2'b01;
+reg adc_sck_temp=1;
+reg [11:0]d_out_ch5_temp=0;
+reg [11:0]d_out_ch6_temp=0;
+reg [11:0]d_out_ch7_temp=0;
+
+
+always@(negedge clk_50)begin
+
+	if(i != 0)
+		i <= i - 1;
+	else begin
+		i <= 9;
+		adc_sck_temp <= adc_sck_temp ? 1'b0: 1'b1;
+	end
+
+end
+
+assign adc_sck = adc_sck_temp;
+
+always@(negedge adc_sck)begin
+ case(data_frame)
+   2'b01:begin
+	   if(j==15)begin
+		  j=0;
+		  k=1;
+		  b=2'b10;
+		end else begin
+		 
+		 j=j+1;
+		 k=k+1;
+		 case(k)
+		  3: a=1;
+		  4: a=0;
+		  5: a=1;
+		  6: begin
+		      a=0;
+		      d_out_ch7_temp[11]=dout;
+			   end
+		  7: d_out_ch7_temp[10]=dout;
+		  8: d_out_ch7_temp[9]=dout;
+		  9: d_out_ch7_temp[8]=dout;
+		  10: d_out_ch7_temp[7]=dout;
+		  11: d_out_ch7_temp[6]=dout;
+		  12: d_out_ch7_temp[5]=dout;
+		  13: d_out_ch7_temp[4]=dout;
+		  14: d_out_ch7_temp[3]=dout;
+		  15: d_out_ch7_temp[2]=dout;
+		  16: d_out_ch7_temp[1]=dout;
+		  17: d_out_ch7_temp[0]=dout;
+		 endcase
+		end
+		end
+   2'b10:begin
+	   if(j==15)begin
+		  j=0;
+		  k=1;
+		  b=2'b11;
+		end else begin
+		 
+		 j=j+1;
+		 k=k+1;
+		 case(k)
+		  3: a=1;
+		  4: a=1;
+		  5: a=0;
+		  6: d_out_ch5_temp[11]=dout;
+		  7: d_out_ch5_temp[10]=dout;
+		  8: d_out_ch5_temp[9]=dout;
+		  9: d_out_ch5_temp[8]=dout;
+		  10: d_out_ch5_temp[7]=dout;
+		  11: d_out_ch5_temp[6]=dout;
+		  12: d_out_ch5_temp[5]=dout;
+		  13: d_out_ch5_temp[4]=dout;
+		  14: d_out_ch5_temp[3]=dout;
+		  15: d_out_ch5_temp[2]=dout;
+		  16: d_out_ch5_temp[1]=dout;
+		  17: d_out_ch5_temp[0]=dout;
+		 endcase
+		end
+	   end
+	2'b11:begin
+	   if(j==15)begin
+		  j=0;
+		  k=1;
+		  b=2'b01;
+		end else begin
+		 
+		 j=j+1;
+		 k=k+1;
+		 case(k)
+		  3: a=1;
+		  4: a=1;
+		  5: a=1;
+		  6: a=0;
+		  7: d_out_ch6_temp[10]=dout;
+		  8: d_out_ch6_temp[9]=dout;
+		  9: d_out_ch6_temp[8]=dout;
+		  10: d_out_ch6_temp[7]=dout;
+		  11: d_out_ch6_temp[6]=dout;
+		  12: d_out_ch6_temp[5]=dout;
+		  13: d_out_ch6_temp[4]=dout;
+		  14: d_out_ch6_temp[3]=dout;
+		  15: d_out_ch6_temp[2]=dout;
+		  16: d_out_ch6_temp[1]=dout;
+		  17: d_out_ch6_temp[0]=dout;
+		 endcase
+		end
+		end
+ endcase	 
+		 
+end
+
+assign d_out_ch5 = (j==0) ? d_out_ch5_temp:d_out_ch5;
+assign d_out_ch6 = (j==0) ? d_out_ch6_temp:d_out_ch6;
+assign d_out_ch7 = (j==0) ? d_out_ch7_temp:d_out_ch7;
+assign din=a;
+assign data_frame=b;

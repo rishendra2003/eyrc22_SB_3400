@@ -1,0 +1,196 @@
+reg [4:0]in=5'b11011;
+reg [1:0]state=0;
+reg [4:0]map1[26:0];
+reg [4:0]map2[27:0];
+reg [25:0]visit;
+reg [25:0]visited;
+integer i,k,count;
+reg [4:0]w[25:0][25:0];
+reg [10*5-1:0]final_temp;
+reg [4:0]prev;
+reg [4:0]j;
+
+initial begin
+ for(i=0;i<26;i=i+1)begin
+  for(k=0;k<26;k=k+1)
+   w[i][k]=5'b11011;
+ end
+ j=0;
+ final_path=0;
+ map1[26]=5'b11010;
+ map2[26]=5'b11010;
+ map2[27]=5'b11011;
+ done=1;
+ w[0][1]=3;
+ w[1][0]=3;
+ w[1][2]=3;
+ w[2][1]=3;
+ w[2][3]=1;
+ w[3][2]=1;
+ w[2][5]=3;
+ w[5][2]=3;
+ w[5][6]=1;
+ w[6][5]=1;
+ w[4][6]=3;
+ w[6][4]=3;
+ w[6][16]=3;
+ w[16][6]=3;
+ w[5][9]=2;
+ w[9][5]=2;
+ w[9][8]=1;
+ w[8][9]=1;
+ w[9][15]=1;
+ w[15][9]=1;
+ w[14][15]=1;
+ w[15][14]=1;
+ w[15][22]=1;
+ w[22][15]=1;
+ w[22][23]=1;
+ w[23][22]=1;
+ w[23][24]=2;
+ w[24][23]=2;
+ w[16][23]=2;
+ w[23][16]=2;
+ w[10][16]=2;
+ w[16][10]=2;
+ w[22][25]=3;
+ w[25][22]=3;
+ w[22][20]=2;
+ w[20][22]=2;
+ w[20][21]=1;
+ w[21][20]=1;
+ w[20][18]=1;
+ w[18][20]=1;
+ w[18][19]=1;
+ w[19][18]=1;
+ w[13][18]=2;
+ w[18][13]=2;
+ w[13][12]=1;
+ w[12][13]=1;
+ w[12][17]=3;
+ w[17][12]=3;
+ w[12][11]=3;
+ w[11][12]=3;
+ w[12][7]=2;
+ w[7][12]=2;
+ w[1][13]=3;
+ w[13][1]=3;
+end
+
+
+always@(negedge clk)begin
+ case(state)
+  0: begin
+      if(start)begin
+		 done=0;
+		 state=1;
+		end
+	  end
+  1: begin
+     for(i=0;i<26;i=i+1)begin
+	   map1[i]=in;
+		visit[i]=0;
+		visited[i]=0;
+	  end
+     map1[s_node]=0;
+     map2[s_node]=5'b11011;
+	  visit[s_node]=1;
+	  state=2;
+	  end
+  2: begin
+     if(visited!=26'b11111111111111111111111111)begin
+	   if(j<26)begin
+		 if(visit[j])
+		  cal(j);
+		 j=j+1'b1;
+		end
+		else
+		 j=0;
+	  end
+	  else begin
+	   state=3;
+		count=10;
+	  end
+     end
+  3: begin
+       case(count)
+		  10: begin
+		       final_temp[4:0]=e_node;
+				 prev=e_node;
+				 count=9;
+				end
+		  9: begin
+		      final_temp[9:5]=map2[prev];
+				prev=map2[prev];
+				count=8;
+			  end
+		  8: begin
+		      final_temp[14:10]=map2[prev];
+				prev=map2[prev];
+				count=7;
+			  end
+		  7: begin
+		      final_temp[19:15]=map2[prev];
+				prev=map2[prev];
+				count=6;
+			  end
+		  6: begin
+		      final_temp[24:20]=map2[prev];
+				prev=map2[prev];
+				count=5;
+			  end
+		  5: begin
+		      final_temp[29:25]=map2[prev];
+				prev=map2[prev];
+				count=4;
+			  end
+		  4: begin
+		      final_temp[34:30]=map2[prev];
+				prev=map2[prev];
+				count=3;
+			  end
+		  3: begin
+		      final_temp[39:35]=map2[prev];
+				prev=map2[prev];
+				count=2;
+			  end
+		  2: begin
+		      final_temp[44:40]=map2[prev];
+				prev=map2[prev];
+				count=1;
+			  end
+		  1: begin
+		      final_temp[49:45]=map2[prev];
+				prev=map2[prev];
+				count=0;
+			  end	
+		  0: begin
+		      final_path=final_temp;
+				done=1;
+				state=0;
+				count=10;
+			  end
+		 endcase  
+	  end
+	   
+endcase
+end
+
+
+task automatic cal(input [4:0]j);
+begin
+ for(i=0;i<26;i=i+1)begin
+  if(w[j][i]!=in)begin
+	 if(!visited[i])begin
+	  if(w[i][j]+map1[j]<map1[i])begin
+	   map1[i]=w[i][j]+map1[j];
+		visit[i]=1;
+		map2[i]=j;
+	  end
+	 end
+  end
+ end 
+ visited[j]=1;
+ visit[j]=0;
+end	  
+endtask
