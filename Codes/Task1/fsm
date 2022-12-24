@@ -1,0 +1,29 @@
+reg Y1 = 0;
+assign Y = Y1;
+
+reg [5:0] z;
+localparam A=6'd000000, B=6'd000001, C=6'd000010, D=6'd000102, E=6'd001022, F=6'd010221, G=6'd102210;
+
+always @ (posedge CLK)
+ case(z)
+   A: if(I==4'b0001) z<=B;
+	   else     z<=A;
+	B: if(I==4'b0001) z<=B;
+      else if(I==4'b0000) z<=C;
+	   else     z<=A;
+	C: if(I==4'b0010) z<=D;
+      else     z<=A;
+	D: if(I==4'b0010) z<=E;
+      else     z<=A;
+	E: if(I==4'b0001) z<=F;
+      else     z<=A;
+	F: if(I==4'b0000) z<=G;
+      else     z<=A;
+	G: if(I==4'b0010) z<=D;
+	   else     z<=A;
+	default: z=6'd000000;
+ endcase	
+ 
+ always @(z)
+   if (z==G) Y1=1;
+	else Y1=0;

@@ -1,0 +1,17 @@
+reg [10:0] q_next=0;
+reg [10:0] q_reg=0;
+
+always @ (posedge clk)
+begin
+ if(q_reg>=980)
+  q_reg<=0;
+ else
+  q_reg<=q_next;
+end
+
+always @ (*)
+begin
+ q_next = q_reg+5'b10100;
+end
+
+assign PWM_OUT = (DUTY_CYCLE*10 > q_reg) ? 1:0;
